@@ -42,6 +42,29 @@ class LoggingRobot(val robot: Robot) extends Robot:
     robot.act()
     println(robot.toString)
 
+class RobotWithBattery(val robot: Robot) extends Robot:
+  private var battery = 100
+
+  def batteryLevel: Int = battery
+  export robot.{position, direction, turn}
+  override def act(): Unit =
+    if battery >= 25 then
+      robot.act()
+      battery = battery - 25
+    else ()
+
+import scala.util.Random
+class RobotCanFail(val robot: Robot) extends Robot:
+  private var rand = Random.nextInt(100)
+  def probability: Int = rand
+  export robot.{position, direction, turn}
+  override def act(): Unit =
+    if rand >= 50 then
+      robot.act()
+      rand = Random.nextInt(100)
+    else
+      rand = Random.nextInt(100)
+
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))
   robot.act() // robot at (0, 1) facing North
