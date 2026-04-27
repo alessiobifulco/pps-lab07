@@ -17,17 +17,17 @@ class ParserScala extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.
   def parserSTN = new ShortenThenNParser(Set('a', 'b'), 3)
 
 
-  test("basic parser should accept just  a b c sequence"):
+  test("testBasicParser"):
     parser.parseAll("aabc".toList) shouldBe true
     parser.parseAll("aabcdc".toList) shouldBe false
     parser.parseAll("".toList) shouldBe true
 
-  test("test non empty parser"):
+  test("testNonEmptyParser"):
     parserNE.parseAll("0101".toList) shouldBe true
     parserNE.parseAll("0123".toList) shouldBe false
     parserNE.parseAll(List()) shouldBe false
 
-  test("test NotTwoConsecutiveParser"):
+  test("testNotTwoConsecutiveParser"):
     parserNTC.parseAll("XYZ".toList) shouldBe true
     parserNTC.parseAll("XYYZ".toList) shouldBe false
     parserNTC.parseAll("".toList) shouldBe true
