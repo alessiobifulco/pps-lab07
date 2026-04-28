@@ -54,16 +54,21 @@ class RobotWithBattery(val robot: Robot) extends Robot:
     else ()
 
 import scala.util.Random
-class RobotCanFail(val robot: Robot) extends Robot:
+class RobotCanFail(val robot: Robot, val prob: Int) extends Robot:
   private var rand = Random.nextInt(100)
   def probability: Int = rand
   export robot.{position, direction, turn}
   override def act(): Unit =
-    if rand >= 50 then
+    if rand >= prob then
       robot.act()
       rand = Random.nextInt(100)
     else
       rand = Random.nextInt(100)
+
+class RobotRepeated(val robot: Robot, val nReps: Int) extends Robot:
+  export robot.{position, direction, turn}
+  override def act(): Unit =
+    for _ <- 1 to nReps do robot.act()
 
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))
