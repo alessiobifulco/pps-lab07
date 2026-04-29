@@ -27,13 +27,49 @@ object ConnectThree extends App:
 
   import Player.*
 
-  def find(board: Board, x: Int, y: Int): Option[Player] = ???
+  def find(board: Board, x: Int, y: Int): Option[Player] = board.find(d => d.x == x && d.y == y).map(d => d.player)
 
-  def firstAvailableRow(board: Board, x: Int): Option[Int] = ???
+  def firstAvailableRow(board: Board, x: Int): Option[Int] = Option(board.count(_.x == x)).filter(_ <= bound)
 
-  def placeAnyDisk(board: Board, player: Player): Seq[Board] = ???
+  def placeAnyDisk(board: Board, player: Player): Seq[Board] =
+    for
+      x <- 0 to bound
+      y <- firstAvailableRow(board,x)
+    yield board :+ Disk(x,y,player)
 
-  def computeAnyGame(player: Player, moves: Int): LazyList[Game] = ???
+
+  def computeAnyGame(player: Player, moves: Int): LazyList[Game] = moves match
+    case 0 => LazyList(List(List()))
+    case _ =>
+      for
+        game <- computeAnyGame(player.other, moves - 1)
+        board <- placeAnyDisk(game.last, player)
+      yield game :+ board
+
+//  def computeAnyGameWithBreak(player: Player, moves: Int): LazyList[Game] = moves match
+//    case 0 => LazyList(List(List()))
+//    case _ =>
+//      for
+//        game <- computeAnyGameWithBreak(player.other, moves - 1)
+//        game2 <- if someoneHasWon(game.last, player) then
+//          LazyList(game)
+//        else placeAnyDisk(game.last, player).map(b => game :+ b)
+//      yield game2
+//
+//    def someoneHasWon(board: Board, p: Player): Boolean =
+//      hasWon(board, p) || hasWon(board, p.other)
+//
+//    def hasWon(board: Board, p: Player): Boolean =
+//      val myDisks = board.filter(_.player == p)
+//      val directions = List((1, 0), (0, 1), (1, 1), (1, -1))
+//      myDisks.exists { d =>
+//        directions.exists { (dx, dy) =>
+//          myDisks.exists(d1 => d1.x == d.x + dx && d1.y == d.y + dy) &&
+//            myDisks.exists(d2 => d2.x == d.x + dx * 2 && d2.y == d.y + dy * 2)
+//        }
+//      }
+
+
 
   def printBoards(game: Seq[Board]): Unit =
     for
